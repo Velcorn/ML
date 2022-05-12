@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Plot data points
     plt.scatter(data[:, 0], data[:, 1], c=data[:, 2], cmap='coolwarm')
     # Set learning rate, number of epochs and initialize thetas
-    alpha = 1e-2
+    alpha = 1e-1
     epochs = 100
     thetas = np.random.uniform(-.01, .01, (3, 1))
     # Plot initial boundary
@@ -65,3 +65,4 @@ if __name__ == '__main__':
     plt.plot(data[:, 0], [x_2(thetas, x) for x in data[:, 0]], 'k', label='Final Boundary')
     plt.legend()
     plt.show()
+    print()
