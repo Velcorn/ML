@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
-from tqdm import tqdm
+from sklearn.metrics import accuracy_score
 
 
 def adaboost(X, y, n_clfs):
@@ -10,7 +9,7 @@ def adaboost(X, y, n_clfs):
     # Initialize dict of classifiers
     clfs = {}
     # Iterate over classifiers
-    for i in tqdm(range(n_clfs), file=sys.stdout):
+    for i in range(n_clfs):
         # Create classifier as random thresholds
         clf = np.random.uniform(np.min(X), np.max(X), len(X))
         # Randomly select x- or y-axis
@@ -90,6 +89,7 @@ if __name__ == '__main__':
     # Print some results
     print(f'Prediction: {list(H)}')
     print(f'Ground truth: {list(y)}')
+    print(f'Accuracy: {round(accuracy_score(H, y) * 100, 2)}%')
     print(f'The params are (axis, parity, threshold, alpha):')
     for val in clfs.values():
         print(val[:-1])
