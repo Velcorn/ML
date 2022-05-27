@@ -4,26 +4,29 @@ from sklearn.metrics import accuracy_score
 
 
 def adaboost(X, y, n_clfs):
-    # Initialize weights
+    # Initialize weights and dict of classifiers
     w = np.ones(len(X)) / len(X)
-    # Initialize dict of classifiers
     clfs = {}
+
     # Iterate over classifiers
     for i in range(n_clfs):
-        # Create classifier as random thresholds
+        # Create weak classifier as len(X) random thresholds between min and max value of X
         clf = np.random.uniform(np.min(X), np.max(X), len(X))
+
         # Randomly select x- or y-axis
         axis = np.random.choice([0, 1])
         data = X[:, axis]
-        # Calculate error
+
+        # Calculate minimum error by iterating over thresholds and comparing predictions with y
         min_error = np.inf
         for t in clf:
+            # Predict with parity 1 and calculate error
             p = 1
             preds = np.ones(len(data))
             preds[data < t] = -1
             error = np.sum(w[preds != y])
 
-            # Swap parity if error higher than 50%
+            # Update error and parity if error higher than 50%
             if error > .5:
                 error = 1 - error
                 p = -1
@@ -37,16 +40,18 @@ def adaboost(X, y, n_clfs):
         # Calculate alpha
         alpha = .5 * np.log((1 - min_error) / min_error)
 
-        # Predict with fitted weak classifier and update weights
+        # Predict with fitted weak classifier
         preds = np.ones(len(data))
         if parity == 1:
             preds[data < threshold] = -1
         else:
             preds[data > threshold] = -1
+
+        # Update weights
         w *= np.exp(-alpha * y * preds)
         w /= np.sum(w)
 
-        # Add classifier and params to dict
+        # Add weak classifier params to dict
         clfs[i] = (axis, parity, threshold, alpha, preds)
 
     return clfs
