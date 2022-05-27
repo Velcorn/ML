@@ -48,8 +48,7 @@ def adaboost(X, y, n_clfs):
             preds[data > threshold] = -1
 
         # Update distribution
-        D_t *= np.exp(-alpha_t * y * preds)
-        D_t /= np.sum(D_t)
+        D_t = 1/np.sum(D_t) * D_t * np.exp(-alpha_t * y * preds)
 
         # Add weak classifier params to dict
         h_ts[i] = (axis, parity, threshold, alpha_t, preds)
