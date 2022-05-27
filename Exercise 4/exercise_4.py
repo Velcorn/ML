@@ -4,41 +4,41 @@ from sklearn.metrics import accuracy_score
 
 
 def adaboost(X, y, n_clfs):
-    # Initialize weights and dict of classifiers
-    w = np.ones(len(X)) / len(X)
-    clfs = {}
+    # Initialize distribution and dict of classifiers
+    D_t = np.ones(len(X)) / len(X)
+    h_ts = {}
 
     # Iterate over classifiers
     for i in range(n_clfs):
         # Create weak classifier as len(X) random thresholds between min and max value of X
-        clf = np.random.uniform(np.min(X), np.max(X), len(X))
+        h_t = np.random.uniform(np.min(X), np.max(X), len(X))
 
         # Randomly select x- or y-axis
         axis = np.random.choice([0, 1])
         data = X[:, axis]
 
         # Calculate minimum error by iterating over thresholds and comparing predictions with y
-        min_error = np.inf
-        for t in clf:
+        min_e_t = np.inf
+        for t in h_t:
             # Predict with parity 1 and calculate error
-            p = 1
+            p_t = 1
             preds = np.ones(len(data))
             preds[data < t] = -1
-            error = np.sum(w[preds != y])
+            e_t = np.sum(D_t[preds != y])
 
             # Update error and parity if error higher than 50%
-            if error > .5:
-                error = 1 - error
-                p = -1
+            if e_t > .5:
+                e_t = 1 - e_t
+                p_t = -1
 
-            # Update minimum error
-            if error < min_error:
-                min_error = error
-                parity = p
+            # If error lower than minimum error, update minimum error, parity and threshold
+            if e_t < min_e_t:
+                min_e_t = e_t
+                parity = p_t
                 threshold = t
 
         # Calculate alpha
-        alpha = .5 * np.log((1 - min_error) / min_error)
+        alpha_t = .5 * np.log((1 - min_e_t) / min_e_t)
 
         # Predict with fitted weak classifier
         preds = np.ones(len(data))
@@ -47,14 +47,14 @@ def adaboost(X, y, n_clfs):
         else:
             preds[data > threshold] = -1
 
-        # Update weights
-        w *= np.exp(-alpha * y * preds)
-        w /= np.sum(w)
+        # Update distribution
+        D_t *= np.exp(-alpha_t * y * preds)
+        D_t /= np.sum(D_t)
 
         # Add weak classifier params to dict
-        clfs[i] = (axis, parity, threshold, alpha, preds)
+        h_ts[i] = (axis, parity, threshold, alpha_t, preds)
 
-    return clfs
+    return h_ts
 
 
 if __name__ == '__main__':
@@ -68,8 +68,10 @@ if __name__ == '__main__':
 
     # Run AdaBoost
     print('Running AdaBoost...')
-    clfs = adaboost(X, y, n_clfs)
-    H = np.sign(np.sum([clf[-1] * clf[-2] for clf in clfs.values()], axis=0))
+    h_ts = adaboost(X, y, n_clfs)
+
+    # Calculate prediction of strong classifier
+    H = np.sign(np.sum([clf[-1] * clf[-2] for clf in h_ts.values()], axis=0))
 
     # Plot ground truth
     print('Plotting...')
@@ -84,7 +86,7 @@ if __name__ == '__main__':
     plt.title('AdaBoost')
 
     # Plot weak classifier lines and show plot
-    for clf in clfs.values():
+    for clf in h_ts.values():
         if clf[0] == 0:
             plt.hlines(clf[2], np.min(X), np.max(X), colors='k', linestyles='dashed')
         else:
@@ -96,7 +98,7 @@ if __name__ == '__main__':
     print(f'Ground truth: {list(y)}')
     print(f'Accuracy: {round(accuracy_score(H, y) * 100, 2)}%')
     print(f'The params are (axis, parity, threshold, alpha):')
-    for val in clfs.values():
+    for val in h_ts.values():
         print(val[:-1])
 
     # All done
