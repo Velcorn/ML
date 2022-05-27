@@ -19,6 +19,8 @@ def adaboost(X, y, n_clfs):
 
         # Calculate minimum error by iterating over thresholds and comparing predictions with y
         min_e_t = np.inf
+        # Declare parity and threshold so linter doesn't complain about potential declaration before assignment
+        parity, threshold = None, None
         for t in h_t:
             # Predict with parity 1 and calculate error
             p_t = 1
