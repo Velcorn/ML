@@ -60,7 +60,7 @@ def adaboost(X, y, n_clfs):
 
 if __name__ == '__main__':
     # Set number of classifiers
-    n_clfs = 20
+    n_clfs = 10
 
     # Get matrix from textfile as numpy array and split into X and y
     mat = np.loadtxt('dataCircle.txt')
@@ -95,12 +95,12 @@ if __name__ == '__main__':
     plt.show()
 
     # Print some results
-    print(f'Prediction: {list(H)}')
-    print(f'Ground truth: {list(y)}')
-    print(f'Accuracy: {round(accuracy_score(H, y) * 100, 2)}%')
     print(f'The params are (axis, parity, threshold, alpha):')
     for val in h_ts.values():
         print(val[:-1])
+    print(f'Prediction: {list(H)}')
+    print(f'Ground truth: {list(y)}')
+    print(f'Accuracy: {round(accuracy_score(H, y) * 100, 2)}%')
 
     # All done
     print('All Done!')
