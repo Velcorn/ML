@@ -16,7 +16,7 @@ for k in ['linear', 'poly', 'sigmoid', 'rbf']:
     model = GridSearchCV(svc, params)
 
     # Load images into list as numpy arrays, create ground truth list and create feature vectors
-    images = [np.asarray(Image.open(x)) for x in glob.glob('*/*.png')]
+    images = [np.asarray(Image.open(x)) for x in glob.glob('../Data/Exercise 3/*/*.png')]
     ground_truth = [0] * 30 + [1] * 30
     features = []
     for img in images:
